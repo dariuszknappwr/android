@@ -1,0 +1,6 @@
+<resources>
+    <array name="categories">
+        <item>Przepisy Wegetariańskie</item>
+        <item>Przepisy Niskokaloryczne</item>
+    </array>
+</resources>

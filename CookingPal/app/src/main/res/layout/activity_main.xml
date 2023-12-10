@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingTop="16dp"
+    android:paddingRight="16dp"
+    android:paddingBottom="16dp"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/buttonShowRecipes"
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/scanButton"
+        android:layout_alignStart="@+id/scanButton"
+        android:layout_alignTop="@+id/scanButton"
+        android:layout_alignEnd="@+id/scanButton"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="-231dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="183dp"
+        android:text="Pokaż przepisy" />
+
+    <Button
+        android:id="@+id/scanButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Skanuj Kod Kreskowy" />
+
+    <EditText
+        android:id="@+id/ingredientEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/scanButton"
+        android:layout_marginTop="16dp"
+        android:hint="Dodaj składnik" />
+
+    <Spinner
+        android:id="@+id/categorySpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ingredientEditText"
+        android:layout_marginTop="16dp"
+        android:entries="@array/categories"
+        android:prompt="@string/choose_category_prompt" />
+
+    <Button
+        android:id="@+id/addIngredientButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/categorySpinner"
+        android:layout_marginTop="16dp"
+        android:text="Dodaj składnik" />
+
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/addIngredientButton"
+        android:layout_marginTop="16dp"
+        android:text="Wyszukaj przepisy" />
+
+    <RelativeLayout
+        android:id="@+id/recipeDetailsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/searchButton"
+        android:layout_marginTop="16dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/recipeDetailsTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Szczegóły przepisu"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/recipeDetailsIngredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/recipeDetailsTitle"
+            android:layout_marginTop="8dp"
+            android:text="Składniki: " />
+
+        <TextView
+            android:id="@+id/recipeDetailsInstructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/recipeDetailsIngredients"
+            android:layout_marginTop="8dp"
+            android:text="Instrukcje: " />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/addToFavoritesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipeDetailsLayout"
+        android:layout_marginTop="16dp"
+        android:text="Dodaj do ulubionych" />
+
+</RelativeLayout>
