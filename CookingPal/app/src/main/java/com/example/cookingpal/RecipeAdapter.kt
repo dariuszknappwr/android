@@ -1,12 +1,10 @@
 package com.example.cookingpal
 
-// RecipeAdapter.kt
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.cookingpal.Recipe
 
 class RecipeAdapter(private var recipes: List<Recipe>) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
@@ -23,7 +21,14 @@ class RecipeAdapter(private var recipes: List<Recipe>) : RecyclerView.Adapter<Re
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val currentRecipe = recipes[position]
         holder.titleTextView.text = currentRecipe.title
-        holder.ingredientsTextView.text = currentRecipe.ingredients.toString()
+        var ingredients: String = ""
+        for (i in currentRecipe.ingredients) {
+            val lastIngredient = currentRecipe.ingredients[currentRecipe.ingredients.lastIndex]
+            ingredients += i.name.toString()
+            if(i != lastIngredient)
+                ingredients += ", "
+        }
+        holder.ingredientsTextView.text = ingredients.toString()
     }
 
     override fun getItemCount(): Int {

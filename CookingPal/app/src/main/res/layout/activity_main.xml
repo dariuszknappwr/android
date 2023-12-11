@@ -46,7 +46,8 @@
         android:layout_below="@id/ingredientEditText"
         android:layout_marginTop="16dp"
         android:entries="@array/categories"
-        android:prompt="@string/choose_category_prompt" />
+        android:prompt="@string/choose_category_prompt"
+        tools:visibility="gone" />
 
     <Button
         android:id="@+id/addIngredientButton"
@@ -54,7 +55,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/categorySpinner"
         android:layout_marginTop="16dp"
-        android:text="Dodaj składnik" />
+        android:text="Dodaj składnik"
+        android:visibility="gone"
+        tools:visibility="gone" />
 
     <Button
         android:id="@+id/searchButton"
@@ -62,7 +65,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/addIngredientButton"
         android:layout_marginTop="16dp"
-        android:text="Wyszukaj przepisy" />
+        android:text="Wyszukaj przepisy"
+        android:visibility="gone"
+        tools:visibility="gone" />
 
     <RelativeLayout
         android:id="@+id/recipeDetailsLayout"
@@ -70,7 +75,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/searchButton"
         android:layout_marginTop="16dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        tools:visibility="gone">
 
         <TextView
             android:id="@+id/recipeDetailsTitle"
@@ -103,6 +109,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/recipeDetailsLayout"
         android:layout_marginTop="16dp"
-        android:text="Dodaj do ulubionych" />
+        android:text="Dodaj do ulubionych"
+        android:visibility="gone"
+        tools:visibility="gone" />
 
 </RelativeLayout>

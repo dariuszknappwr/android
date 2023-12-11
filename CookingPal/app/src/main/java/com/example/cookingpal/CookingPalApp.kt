@@ -27,14 +27,12 @@ class CookingPalApp(private val activity: Activity, context: Context) {
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            // Dodaj przykładowe przepisy przy pierwszym uruchomieniu
-            recipeDao.insertRecipe(RecipeEntity(title = "Przykładowy Przepis", ingredients = "Składnik 1, Składnik 2", instructions = "Kroki przygotowania..."))
+            recipeDao.insertRecipe(RecipeEntity(title = "Przykładowy Przepis", ingredients = "Składnik 1, Składnik 2", instructions = "Kroki"))
         }
     }
 
 
     fun scanBarcode() {
-        // Inicjalizacja skanera kodów kreskowych
         val integrator = IntentIntegrator(activity)
         integrator.setPrompt("Zeskanuj kod kreskowy")
         integrator.setBeepEnabled(true)
@@ -42,13 +40,12 @@ class CookingPalApp(private val activity: Activity, context: Context) {
         integrator.initiateScan()
     }
 
-    // Metoda wywoływana po zakończeniu skanowania
     fun handleScanResult(result: IntentResult?) {
         if (result != null) {
             val scannedContent = result.contents
             println("Zeskanowano kod kreskowy: $scannedContent")
 
-            // Tutaj można dodać logikę obsługi zeskanowanego kodu, na przykład dodanie składnika.
+            // dodać logikę po zeskanowaniu
         }
     }
 
@@ -59,13 +56,11 @@ class CookingPalApp(private val activity: Activity, context: Context) {
     }
 
     fun searchRecipes(category: String): List<Recipe> {
-        // Implementacja wyszukiwania przepisów według kategorii
         println("Wyszukiwanie przepisów w kategorii: $category")
         return emptyList() // Pusta lista - do zaimplementowania
     }
 
     fun viewRecipeDetails(recipe: Recipe) {
-        // Implementacja wyświetlania szczegółów przepisu
         println("Szczegóły przepisu: ${recipe.getTitle()}")
         println("Składniki: ${recipe.getIngredients().joinToString(", ")}")
         println("Instrukcje: ${recipe.getInstructions()}")

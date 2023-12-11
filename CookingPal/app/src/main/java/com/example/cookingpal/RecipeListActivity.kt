@@ -22,9 +22,11 @@ class RecipeListActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recipeAdapter = RecipeAdapter(emptyList())
         recyclerView.adapter = recipeAdapter
+
+
         var call: Call<RecipeResponse>
         call = RecipeApiClient.recipeApi.getRecipes("9091e7d35cc74b1baca0b9194fa229bc", 1)
-        call = RecipeApiClient.recipeApi.getVegetarianRecipes("9091e7d35cc74b1baca0b9194fa229bc", 1)
+        //call = RecipeApiClient.recipeApi.getVegetarianRecipes("9091e7d35cc74b1baca0b9194fa229bc", 1)
         call.enqueue(object : Callback<RecipeResponse> {
             override fun onResponse(call: Call<RecipeResponse>, response: Response<RecipeResponse>) {
                 if (response.isSuccessful) {
@@ -47,13 +49,12 @@ class RecipeListActivity : AppCompatActivity() {
     }
 
     private fun updateUIWithRecipes() {
-        // Get sample recipes and update the adapter
         val sampleRecipes = getSampleRecipesString()
         recipeAdapter.updateRecipes(sampleRecipes)
     }
 
     private fun getSampleRecipesString(): List<Recipe> {
-        var recipies = listOf(
+        val recipies = mutableListOf(
             Recipe("Spaghetti Bolognese",
                 listOf(Ingredient("Pasta"), Ingredient("Meat"), Ingredient("Tomato Sauce")),
                 "Cook pasta. Brown meat. Add sauce."),
@@ -64,8 +65,7 @@ class RecipeListActivity : AppCompatActivity() {
 
         if (apiRecipes.isNotEmpty()) {
             val apiRecipe = apiRecipes.first()
-            recipies = recipies +
-                    Recipe(apiRecipe.getTitle().toString(), listOf(), "")
+            recipies +=  Recipe(apiRecipe.getTitle().toString(), listOf(), "")
                     Recipe(
                         apiRecipe.getTitle().toString(),
                         listOf(Ingredient("Pasta"), Ingredient("Meat"), Ingredient("Tomato Sauce")),
