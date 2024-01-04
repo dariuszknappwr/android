@@ -11,6 +11,14 @@ import androidx.room.RoomDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import android.widget.TextView
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 
 class CookingPalApp(private val activity: Activity, context: Context) {
     private val ingredients: MutableList<Ingredient> = mutableListOf()
@@ -40,14 +48,47 @@ class CookingPalApp(private val activity: Activity, context: Context) {
         integrator.initiateScan()
     }
 
-    fun handleScanResult(result: IntentResult?) {
-        if (result != null) {
-            val scannedContent = result.contents
-            println("Zeskanowano kod kreskowy: $scannedContent")
+fun handleScanResult(result: IntentResult?) {
+    if (result != null) {
+        val scannedContent = result.contents
+        println("Zeskanowano kod kreskowy: $scannedContent")
 
-            // dodać logikę po zeskanowaniu
-        }
+        // Send a request to the UPCItemDB API
+        val url = "https://api.upcitemdb.com/prod/trial/lookup?upc=$scannedContent"
+        val request = Request.Builder().url(url).build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
+
+                    val responseData = response.body()?.string()
+                    val jsonObject = JSONObject(responseData)
+
+                    // Extract the product name from the JSON response
+                    val itemsArray = jsonObject.getJSONArray("items")
+                    var productName = ""
+                    if (itemsArray.length() == 0) {
+                        productName = "Nie znaleziono produktu."                        
+                    } else{
+                        val firstItemObject = itemsArray.getJSONObject(0)
+                        productName = firstItemObject.getString("title")
+                    }
+
+                    // Start a new Activity
+                    val intent = Intent(activity, ScanResultActivity::class.java)
+                    intent.putExtra("productName", productName)
+                    activity.startActivity(intent)
+                }
+            }
+        })
     }
+}
 
     fun addIngredient(name: String) {
         val ingredient = Ingredient(name = name)

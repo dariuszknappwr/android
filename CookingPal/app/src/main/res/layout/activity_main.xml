@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
@@ -12,105 +13,97 @@
 
     <Button
         android:id="@+id/buttonShowRecipes"
-        android:layout_width="175dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/scanButton"
-        android:layout_alignStart="@+id/scanButton"
-        android:layout_alignTop="@+id/scanButton"
-        android:layout_alignEnd="@+id/scanButton"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="-231dp"
-        android:layout_marginEnd="2dp"
-        android:layout_marginBottom="183dp"
-        android:text="Pokaż przepisy" />
+        android:text="Pokaż przepisy"
+        tools:layout_editor_absoluteX="-5dp"
+        tools:layout_editor_absoluteY="410dp" />
 
     <Button
         android:id="@+id/scanButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="Skanuj Kod Kreskowy" />
+        android:text="Skanuj Kod Kreskowy"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="80dp" />
+
 
     <EditText
         android:id="@+id/ingredientEditText"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/scanButton"
-        android:layout_marginTop="16dp"
-        android:hint="Dodaj składnik" />
+        android:hint="Dodaj składnik"
+        tools:layout_editor_absoluteX="134dp"
+        tools:layout_editor_absoluteY="548dp" />
 
     <Spinner
         android:id="@+id/categorySpinner"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/ingredientEditText"
-        android:layout_marginTop="16dp"
         android:entries="@array/categories"
         android:prompt="@string/choose_category_prompt"
-        tools:visibility="gone" />
+        android:visibility="visible"
+        tools:layout_editor_absoluteX="141dp"
+        tools:layout_editor_absoluteY="461dp"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/addIngredientButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/categorySpinner"
-        android:layout_marginTop="16dp"
         android:text="Dodaj składnik"
         android:visibility="gone"
-        tools:visibility="gone" />
+        tools:layout_editor_absoluteX="48dp"
+        tools:layout_editor_absoluteY="244dp"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/searchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/addIngredientButton"
-        android:layout_marginTop="16dp"
         android:text="Wyszukaj przepisy"
         android:visibility="gone"
-        tools:visibility="gone" />
+        tools:layout_editor_absoluteX="50dp"
+        tools:layout_editor_absoluteY="103dp"
+        tools:visibility="visible" />
 
-    <RelativeLayout
-        android:id="@+id/recipeDetailsLayout"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/recipeDetailsTitle"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/searchButton"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"
-        tools:visibility="gone">
+        android:text="Szczegóły przepisu"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:layout_editor_absoluteX="212dp"
+        tools:layout_editor_absoluteY="56dp" />
 
-        <TextView
-            android:id="@+id/recipeDetailsTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Szczegóły przepisu"
-            android:textSize="18sp"
-            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/recipeDetailsIngredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/recipeDetailsTitle"
-            android:layout_marginTop="8dp"
-            android:text="Składniki: " />
+    <TextView
+        android:id="@+id/recipeDetailsInstructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="Instrukcje: "
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="53dp" />
 
-        <TextView
-            android:id="@+id/recipeDetailsInstructions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/recipeDetailsIngredients"
-            android:layout_marginTop="8dp"
-            android:text="Instrukcje: " />
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/recipeDetailsIngredients"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Składniki: "
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="53dp" />
 
     <Button
         android:id="@+id/addToFavoritesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/recipeDetailsLayout"
-        android:layout_marginTop="16dp"
         android:text="Dodaj do ulubionych"
         android:visibility="gone"
-        tools:visibility="gone" />
+        tools:layout_editor_absoluteX="102dp"
+        tools:layout_editor_absoluteY="180dp"
+        tools:visibility="visible" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
