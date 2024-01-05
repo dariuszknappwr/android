@@ -22,9 +22,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.addIngredientButton.setOnClickListener {
-            val ingredientName = binding.ingredientEditText.text.toString()
-            cookingApp.addIngredient(ingredientName)
-            binding.ingredientEditText.text.clear()
+            val intent = Intent(this, AddProductActivity::class.java)
+            startActivity(intent)
         }
 
         binding.searchButton.setOnClickListener {

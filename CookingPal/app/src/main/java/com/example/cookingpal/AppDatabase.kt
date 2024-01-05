@@ -22,8 +22,8 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("DROP TABLE IF EXISTS 'Product'")
         
                 // Create the new tables
-                database.execSQL("CREATE TABLE 'RecipeEntity' ('id' INTEGER PRIMARY KEY NOT NULL, /* other columns */)")
-                database.execSQL("CREATE TABLE 'Product' ('id' INTEGER PRIMARY KEY NOT NULL, 'name' TEXT, /* other columns */)")
+                database.execSQL("CREATE TABLE 'RecipeEntity' ('id' INTEGER PRIMARY KEY NOT NULL)")
+                database.execSQL("CREATE TABLE 'Product' ('id' INTEGER PRIMARY KEY NOT NULL, 'name' TEXT)")
             }
         }
 
