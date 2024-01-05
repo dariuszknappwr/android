@@ -8,7 +8,9 @@ data class Recipe(
     val title: String,
     val imageUrl: String? = null,
     val products: List<Product> = emptyList(),
-    val instructions: String? = ""
+    val instructions: String? = "",
+    var favorite: Boolean = false
+
 ) : Serializable
 {
     @JvmName("recipeId")

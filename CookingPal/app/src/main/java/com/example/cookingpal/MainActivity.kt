@@ -30,6 +30,11 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SearchRecipeActivity::class.java)
             startActivity(intent)
         }
+
+        binding.viewFavoritesButton.setOnClickListener {
+            val intent = Intent(this, FavoriteRecipesActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -30,7 +30,7 @@
         android:layout_marginTop="16dp"
         android:text="Dodaj składnik"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addToFavoritesButton" />
+        app:layout_constraintTop_toBottomOf="@+id/viewFavoritesButton" />
 
 
     <Button
@@ -38,15 +38,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Wyszukaj przepisy"
-        tools:layout_editor_absoluteX="193dp"
-        tools:layout_editor_absoluteY="44dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/addToFavoritesButton"
+        android:id="@+id/viewFavoritesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="93dp"
-        android:text="Dodaj do ulubionych"
+        android:text="@string/show_favorites"
         app:layout_constraintEnd_toEndOf="@+id/addIngredientButton"
         app:layout_constraintStart_toEndOf="@+id/addIngredientButton"
         app:layout_constraintTop_toBottomOf="@+id/searchButton" />

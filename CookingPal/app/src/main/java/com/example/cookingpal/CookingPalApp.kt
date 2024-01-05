@@ -34,13 +34,6 @@ class CookingPalApp(private val activity: Activity, context: Context) {
 
     private val recipeDao: RecipeDao = database.recipeDao()
 
-    init {
-        CoroutineScope(Dispatchers.IO).launch {
-            recipeDao.insertRecipe(RecipeEntity(title = "Przykładowy Przepis", ingredients = "Składnik 1, Składnik 2", instructions = "Kroki"))
-        }
-    }
-
-
     fun scanBarcode() {
         val integrator = IntentIntegrator(activity)
         integrator.setPrompt("Zeskanuj kod kreskowy")
