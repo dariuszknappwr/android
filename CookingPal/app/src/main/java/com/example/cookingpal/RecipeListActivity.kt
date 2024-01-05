@@ -56,10 +56,10 @@ class RecipeListActivity : AppCompatActivity() {
     private fun getSampleRecipesString(): List<Recipe> {
         val recipies = mutableListOf(
             Recipe("Spaghetti Bolognese",
-                listOf(Ingredient("Pasta"), Ingredient("Meat"), Ingredient("Tomato Sauce")),
+                listOf(Product(0,"Pasta"), Product(0,"Meat"), Product(0,"Tomato Sauce")),
                 "Cook pasta. Brown meat. Add sauce."),
             Recipe("Caesar Salad",
-                listOf(Ingredient("Lettuce"), Ingredient("Chicken"), Ingredient("Croutons")),
+                listOf(Product(0,"Lettuce"), Product(0,"Chicken"), Product(0,"Croutons")),
                 "Mix ingredients. Add dressing.")
         )
 
@@ -68,7 +68,7 @@ class RecipeListActivity : AppCompatActivity() {
             recipies +=  Recipe(apiRecipe.getTitle().toString(), listOf(), "")
                     Recipe(
                         apiRecipe.getTitle().toString(),
-                        listOf(Ingredient("Pasta"), Ingredient("Meat"), Ingredient("Tomato Sauce")),
+                        listOf(Product(0,"Pasta"), Product(0,"Meat"), Product(0,"Tomato Sauce")),
                         "Mix everything"
                     )
         }

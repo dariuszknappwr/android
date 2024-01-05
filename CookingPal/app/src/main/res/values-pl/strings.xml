@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CookingPal</string>
+    <string name="choose_category_prompt">Wybierz kategorię</string>
+</resources>

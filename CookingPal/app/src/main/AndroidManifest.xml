@@ -30,6 +30,7 @@
         <activity android:name=".RecipeListActivity" />
         <activity android:name=".ScanResultActivity" />
         <activity android:name=".AddProductActivity" />
+        <activity android:name=".SearchRecipeActivity" />
     </application>
 
 </manifest>

@@ -8,14 +8,27 @@
         android:id="@+id/textViewScannedProduct"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="125dp"
         android:text="Scanned product will appear here"
-        android:textSize="18sp"
-        android:layout_centerInParent="true"/>
+        android:textSize="18sp" />
 
     <Button
-    android:id="@+id/button_add_scanned_product"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Add Scanned Product" />
+        android:id="@+id/button_add_scanned_product"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="149dp"
+        android:text="Add Scanned Product" />
+
+    <Spinner
+        android:id="@+id/spinnerScannedProduct"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="296dp" />
 
 </RelativeLayout>

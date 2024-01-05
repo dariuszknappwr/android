@@ -26,22 +26,14 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.searchButton.setOnClickListener {
-            val category = binding.categorySpinner.selectedItem.toString()
-            val recipes = cookingApp.searchRecipes(category)
-            if (recipes.isNotEmpty()) {
-                val firstRecipe = recipes.first()
-                displayRecipeDetails(firstRecipe)
-            }
-        }
-
-        binding.addToFavoritesButton.setOnClickListener {
-            val currentRecipe = displayedRecipe ?: return@setOnClickListener
-            cookingApp.addToFavorites(currentRecipe)
-        }
 
         binding.buttonShowRecipes.setOnClickListener {
             val intent = Intent(this, RecipeListActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.searchButton.setOnClickListener {
+            val intent = Intent(this, SearchRecipeActivity::class.java)
             startActivity(intent)
         }
     }
@@ -55,12 +47,5 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var displayedRecipe: Recipe? = null
-
-    private fun displayRecipeDetails(recipe: Recipe) {
-        binding.recipeDetailsTitle.text = recipe.getTitle()
-        binding.recipeDetailsIngredients.text = recipe.getIngredients().joinToString(", ")
-        binding.recipeDetailsInstructions.text = recipe.getInstructions()
-        displayedRecipe = recipe
-    }
 }
 

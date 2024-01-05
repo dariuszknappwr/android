@@ -22,8 +22,8 @@ class RecipeAdapter(private var recipes: List<Recipe>) : RecyclerView.Adapter<Re
         val currentRecipe = recipes[position]
         holder.titleTextView.text = currentRecipe.title
         var ingredients: String = ""
-        for (i in currentRecipe.ingredients) {
-            val lastIngredient = currentRecipe.ingredients[currentRecipe.ingredients.lastIndex]
+        for (i in currentRecipe.products) {
+            val lastIngredient = currentRecipe.products[currentRecipe.products.lastIndex]
             ingredients += i.name.toString()
             if(i != lastIngredient)
                 ingredients += ", "

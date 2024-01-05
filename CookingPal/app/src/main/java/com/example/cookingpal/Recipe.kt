@@ -4,7 +4,7 @@ import java.util.UUID
 
 data class Recipe(
     val title: String,
-    val ingredients: List<Ingredient>,
+    val products: List<Product>,
     val instructions: String? = "",
     val image: String = "",
     val id: Int = UUID.randomUUID().hashCode()
@@ -14,7 +14,7 @@ data class Recipe(
     @JvmName("recipeTitle")
     fun getTitle(): String = title
     @JvmName("recipeIngredients")
-    fun getIngredients(): List<Ingredient> = ingredients
+    fun getIngredients(): List<Product> = products
     @JvmName("recipeImage")
     fun getImage(): String = image
     @JvmName("recipeInstructions")

@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import android.widget.TextView
+import android.widget.Toast
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -21,7 +22,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 class CookingPalApp(private val activity: Activity, context: Context) {
-    private val ingredients: MutableList<Ingredient> = mutableListOf()
+    private val products: MutableList<Product> = mutableListOf()
     private val recipes: MutableList<Recipe> = mutableListOf()
     private val favorites: MutableList<Recipe> = mutableListOf()
 
@@ -53,8 +54,8 @@ fun handleScanResult(result: IntentResult?) {
         val scannedContent = result.contents
         println("Zeskanowano kod kreskowy: $scannedContent")
 
-        // Send a request to the UPCItemDB API
-        val url = "https://api.upcitemdb.com/prod/trial/lookup?upc=$scannedContent"
+        // Send a request to the Open Food Facts API
+        val url = "https://world.openfoodfacts.org/api/v0/product/$scannedContent.json"
         val request = Request.Builder().url(url).build()
 
         val client = OkHttpClient()
@@ -64,53 +65,32 @@ fun handleScanResult(result: IntentResult?) {
             }
 
             override fun onResponse(call: Call, response: Response) {
-                response.use {
-                    if (!response.isSuccessful) throw IOException("Unexpected code $response")
-
-                    val responseData = response.body()?.string()
-                    val jsonObject = JSONObject(responseData)
-
-                    // Extract the product name from the JSON response
-                    val itemsArray = jsonObject.getJSONArray("items")
-                    var productName = ""
-                    if (itemsArray.length() == 0) {
-                        productName = "Nie znaleziono produktu."                        
-                    } else{
-                        val firstItemObject = itemsArray.getJSONObject(0)
-                        productName = firstItemObject.getString("title")
-                    }
-
+                val strResponse = response.body()?.string()
+                val jsonResponse = JSONObject(strResponse)
+            
+                // Check if the product exists
+                if (jsonResponse.getString("status_verbose") == "product found") {
+                    val product = jsonResponse.getJSONObject("product")
+            
+                    // Get the product name
+                    val productName = product.getString("product_name")
+            
+                    // Get the ingredients
+                    val ingredientsText = product.getString("ingredients_text")
+            
                     // Start a new Activity
                     val intent = Intent(activity, ScanResultActivity::class.java)
                     intent.putExtra("productName", productName)
+                    intent.putExtra("ingredientsText", ingredientsText)
                     activity.startActivity(intent)
+                } else {
+                    Toast.makeText(activity, "Nie znaleziono produktu", Toast.LENGTH_SHORT).show()
                 }
             }
         })
     }
 }
 
-    fun addIngredient(name: String) {
-        val ingredient = Ingredient(name = name)
-        ingredients.add(ingredient)
-        println("$name dodano do składników.")
-    }
-
-    fun searchRecipes(category: String): List<Recipe> {
-        println("Wyszukiwanie przepisów w kategorii: $category")
-        return emptyList() // Pusta lista - do zaimplementowania
-    }
-
-    fun viewRecipeDetails(recipe: Recipe) {
-        println("Szczegóły przepisu: ${recipe.getTitle()}")
-        println("Składniki: ${recipe.getIngredients().joinToString(", ")}")
-        println("Instrukcje: ${recipe.getInstructions()}")
-    }
-
-    fun addToFavorites(recipe: Recipe) {
-        favorites.add(recipe)
-        println("${recipe.getTitle()} dodano do ulubionych.")
-    }
 }
 
 

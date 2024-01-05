@@ -15,7 +15,7 @@
         android:id="@+id/buttonShowRecipes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="11dp"
+        android:layout_marginStart="43dp"
         android:layout_marginTop="36dp"
         android:text="Pokaż przepisy"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,10 +26,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="34dp"
         android:text="Skanuj Kod Kreskowy"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/addIngredientButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/addIngredientButton" />
 
 
     <Spinner
@@ -47,61 +47,66 @@
         android:id="@+id/addIngredientButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginBottom="34dp"
+        android:layout_marginStart="96dp"
+        android:layout_marginTop="16dp"
         android:text="Dodaj składnik"
-        app:layout_constraintBottom_toTopOf="@+id/scanButton"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/addToFavoritesButton" />
 
     <Button
         android:id="@+id/searchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="34dp"
-        android:layout_marginTop="23dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="12dp"
         android:text="Wyszukaj przepisy"
         app:layout_constraintStart_toStartOf="@+id/recipeDetailsInstructions"
-        app:layout_constraintTop_toBottomOf="@+id/recipeDetailsTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/recipeDetailsInstructions" />
 
     <TextView
         android:id="@+id/recipeDetailsTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="72dp"
-        android:layout_marginEnd="27dp"
+        android:layout_marginEnd="7dp"
+        android:layout_marginBottom="23dp"
         android:text="Szczegóły przepisu"
         android:textSize="18sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/searchButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toEndOf="@+id/recipeDetailsIngredients" />
 
 
     <TextView
         android:id="@+id/recipeDetailsInstructions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="120dp"
         android:text="Instrukcje: "
-        app:layout_constraintBaseline_toBaselineOf="@+id/recipeDetailsIngredients"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/recipeDetailsIngredients"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/recipeDetailsIngredients"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="69dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp"
         android:text="Składniki: "
-        app:layout_constraintStart_toStartOf="@+id/recipeDetailsInstructions"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/recipeDetailsInstructions"
+        app:layout_constraintEnd_toStartOf="@+id/recipeDetailsTitle"
+        app:layout_constraintStart_toEndOf="@+id/recipeDetailsInstructions" />
 
     <Button
         android:id="@+id/addToFavoritesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="93dp"
         android:text="Dodaj do ulubionych"
-        app:layout_constraintBottom_toTopOf="@+id/addIngredientButton"
         app:layout_constraintEnd_toEndOf="@+id/addIngredientButton"
-        app:layout_constraintStart_toEndOf="@+id/addIngredientButton" />
+        app:layout_constraintStart_toEndOf="@+id/addIngredientButton"
+        app:layout_constraintTop_toBottomOf="@+id/searchButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

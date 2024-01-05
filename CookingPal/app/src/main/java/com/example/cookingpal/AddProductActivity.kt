@@ -2,6 +2,8 @@ package com.example.cookingpal
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,18 +48,31 @@ class AddProductActivity : AppCompatActivity() {
             productAdapter.setProducts(products)
         })
 
+        // Load the ingredients from ingredients.xml
+        val ingredients = resources.getStringArray(R.array.ingredients)
+
+        // Set the ingredients as the adapter for the AutoCompleteTextView
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, ingredients)
+        binding.autoCompleteTextViewProductName.setAdapter(adapter)
+
         binding.buttonAddProduct.setOnClickListener {
-            val productName = binding.editTextProductName.text.toString()
+            val productName = binding.autoCompleteTextViewProductName.text.toString()
+        
+            // Check if the product name is in the list of ingredients
+            if (productName in ingredients) {
+                // Create a new Product
+                val product = Product(name = productName)
 
-            // Create a new Product
-            val product = Product(name = productName)
-
-            // Insert the product into the database in a new coroutine
-            CoroutineScope(Dispatchers.IO).launch {
-                productDao.insert(product)
-                withContext(Dispatchers.Main) {
-                    binding.editTextProductName.text.clear()
+                // Insert the product into the database in a new coroutine
+                CoroutineScope(Dispatchers.IO).launch {
+                    productDao.insert(product)
+                    withContext(Dispatchers.Main) {
+                        binding.autoCompleteTextViewProductName.text.clear()
+                    }
                 }
+            }
+            else{
+                Toast.makeText(this, "Proszę wybrać składnik z listy składników", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -5,31 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/editTextProductName"
-        android:layout_width="333dp"
-        android:layout_height="62dp"
-        android:ems="10"
-        android:hint="Dodaj składnik"
-        android:inputType="text"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.288" />
-
     <Button
         android:id="@+id/buttonScanProducts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
         android:text="Skanuj produkty"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/autoCompleteTextViewProductName"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/editTextProductName"
-        app:layout_constraintTop_toBottomOf="@+id/editTextProductName"
-        app:layout_constraintVertical_bias="0.517" />
+        app:layout_constraintStart_toStartOf="@+id/autoCompleteTextViewProductName"
+        app:layout_constraintTop_toBottomOf="@+id/autoCompleteTextViewProductName" />
 
     <Button
         android:id="@+id/buttonAddProduct"
@@ -37,11 +22,10 @@
         android:layout_height="wrap_content"
         android:text="Dodaj"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="@+id/editTextProductName"
+        app:layout_constraintEnd_toEndOf="@+id/autoCompleteTextViewProductName"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/buttonScanProducts"
-        app:layout_constraintTop_toBottomOf="@+id/editTextProductName"
-        app:layout_constraintVertical_bias="0.708" />
+        app:layout_constraintTop_toBottomOf="@+id/autoCompleteTextViewProductName" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
@@ -52,8 +36,8 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewProducts"
-        android:layout_width="409dp"
-        android:layout_height="546dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:clipToPadding="false"
         android:padding="25dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -61,5 +45,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline"
         app:layout_constraintVertical_bias="0.583" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTextViewProductName"
+        android:layout_width="329dp"
+        android:layout_height="64dp"
+        android:hint="Dodaj produkt"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.27" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
