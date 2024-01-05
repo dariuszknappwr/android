@@ -26,12 +26,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-        binding.buttonShowRecipes.setOnClickListener {
-            val intent = Intent(this, RecipeListActivity::class.java)
-            startActivity(intent)
-        }
-
         binding.searchButton.setOnClickListener {
             val intent = Intent(this, SearchRecipeActivity::class.java)
             startActivity(intent)

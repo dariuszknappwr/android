@@ -1,5 +1,6 @@
 package com.example.cookingpal
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.widget.SearchView
@@ -40,6 +41,15 @@ class SearchRecipeActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = adapter
 
+        // Set the listener for the adapter
+        adapter.listener = object : RecipeAdapter.OnRecipeClickListener {
+            override fun onRecipeClick(recipe: Recipe) {
+                val intent = Intent(this@SearchRecipeActivity, RecipeDetailActivity::class.java)
+                intent.putExtra("recipe_id", recipe.id)
+                startActivity(intent)
+            }
+        }
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
@@ -63,38 +73,32 @@ class SearchRecipeActivity : AppCompatActivity() {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
             }
-
+    
             override fun onResponse(call: Call, response: Response) {
                 val strResponse = response.body()?.string()
                 val jsonResponse = JSONObject(strResponse)
-            
-                val recipes = jsonResponse.getJSONArray("results")
-                val recipeList = mutableListOf<Recipe>()
-            
-                for (i in 0 until recipes.length()) {
-                    val recipeJson = recipes.getJSONObject(i)
-            
-                    // Get the list of ingredients
-                    val productsList = mutableListOf<Product>()
-                    if (recipeJson.has("ingredients")) {
-                        val ingredientsJson = recipeJson.getJSONArray("ingredients")
-                        for (j in 0 until ingredientsJson.length()) {
-                            productsList.add(Product(0, ingredientsJson.getString(j)))
-                        }
+    
+                if (jsonResponse.has("results")) {
+                    val recipes = jsonResponse.getJSONArray("results")
+                    val recipeList = mutableListOf<Recipe>()
+    
+                    for (i in 0 until recipes.length()) {
+                        val recipeJson = recipes.getJSONObject(i)
+    
+                        val id = recipeJson.getInt("id")
+                        val title = recipeJson.getString("title")
+                        val imageUrl = if (recipeJson.has("image")) recipeJson.getString("image") else null
+                    
+                        val recipe = Recipe(id, title, imageUrl)
+                        recipeList.add(recipe)
                     }
-            
-                    val recipe = Recipe(
-                        recipeJson.getString("title"),
-                        productsList
-                    )
-                    recipeList.add(recipe)
-                }
-            
-                runOnUiThread {
-                    adapter.updateRecipes(recipeList)
+    
+                    runOnUiThread {
+                        adapter.updateRecipes(recipeList)
+                    }
                 }
             }
         })
-        }
     }
+}
         
