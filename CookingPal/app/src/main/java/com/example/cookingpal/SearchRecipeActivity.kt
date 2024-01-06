@@ -2,11 +2,18 @@ package com.example.cookingpal
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.Spinner
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -19,6 +26,7 @@ class SearchRecipeActivity : AppCompatActivity() {
 
     private lateinit var searchView: SearchView
     private lateinit var recyclerView: RecyclerView
+    private lateinit var searchSpinner: Spinner
     private lateinit var adapter: RecipeAdapter
     private lateinit var cookingPalApp: CookingPalApp
 
@@ -26,10 +34,17 @@ class SearchRecipeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_recipe)
 
+        val searchSpinner: Spinner = findViewById(R.id.searchSpinner)
+        val cuisines = resources.getStringArray(R.array.cuisines)
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, cuisines)
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        searchSpinner.adapter = spinnerAdapter
+
         val searchButton = findViewById<Button>(R.id.searchRecipeButton)
         searchButton.setOnClickListener {
             val query = searchView.query.toString()
-            searchRecipes(query)
+            val cuisine = searchSpinner.selectedItem.toString()
+            searchRecipes(query, cuisine)
         }
 
         cookingPalApp = CookingPalApp(this, this)
@@ -53,7 +68,8 @@ class SearchRecipeActivity : AppCompatActivity() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
-                    searchRecipes(it)
+                    val cuisine = searchSpinner.selectedItem.toString()
+                    searchRecipes(it, cuisine)
                 }
                 return true
             }
@@ -63,9 +79,24 @@ class SearchRecipeActivity : AppCompatActivity() {
             }
         })
     }
-
-    private fun searchRecipes(query: String) {
-        val url = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=9091e7d35cc74b1baca0b9194fa229bc"
+    
+    private fun searchRecipes(query: String, cuisine: String) {
+        val base_url = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=9091e7d35cc74b1baca0b9194fa229bc"
+        var url = if (cuisine != "Dowolna") base_url else "$base_url&cuisine=$cuisine"
+        val onlyAvailableIngredientsCheckBox: CheckBox = findViewById(R.id.onlyAvailableIngredientsCheckBox)
+        if (onlyAvailableIngredientsCheckBox.isChecked) {
+            val productDao = AppDatabase.getDatabase(this@SearchRecipeActivity).productDao()
+            productDao.getAll().observe(this, Observer { products ->
+                val ingredients = products.joinToString("+") { it.name }
+                url += "&includeIngredients=$ingredients"
+                makeRequest(url)
+            })
+        } else {
+            makeRequest(url)
+        }
+    }
+    
+    private fun makeRequest(url: String) {
         val request = Request.Builder().url(url).build()
     
         val client = OkHttpClient()
