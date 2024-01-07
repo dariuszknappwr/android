@@ -2,18 +2,21 @@ package com.example.cookingpal
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Html
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -23,6 +26,25 @@ import org.json.JSONObject
 import java.io.IOException
 
 class SearchRecipeActivity : AppCompatActivity() {
+    val cuisinesMap = mapOf(
+        "Afrykańska" to "African",
+        "Amerykańska" to "American",
+        "Azjatycka" to "Asian",
+        "Brytyjska" to "British",
+        "Chińska" to "Chinese",
+        "Francuska" to "French",
+        "Grecka" to "Greek",
+        "Indyjska" to "Indian",
+        "Włoska" to "Italian",
+        "Japońska" to "Japanese",
+        "Śródziemnomorska" to "Mediterranean",
+        "Meksykańska" to "Mexican",
+        "Polska" to "Polish",
+        "Portugalska" to "Portuguese",
+        "Hiszpańska" to "Spanish",
+        "Tajajska" to "Thai",
+        "Wietnamska" to "Vietnamese"
+        )
 
     private lateinit var searchView: SearchView
     private lateinit var recyclerView: RecyclerView
@@ -34,16 +56,53 @@ class SearchRecipeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_recipe)
 
-        val searchSpinner: Spinner = findViewById(R.id.searchSpinner)
-        val cuisines = resources.getStringArray(R.array.cuisines)
-        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, cuisines)
+        val cuisineSpinner: Spinner = findViewById(R.id.cuisineSpinner)
+        val cuisinesPl = resources.getStringArray(R.array.cuisines_pl)
+        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, cuisinesPl)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        searchSpinner.adapter = spinnerAdapter
+        cuisineSpinner.adapter = spinnerAdapter
+
+        cuisineSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+                val cuisinePl = parent.getItemAtPosition(position).toString()
+                val cuisineEn = cuisinesMap[cuisinePl]
+            }
+        }
+
+        val intolerancesSpinner: Spinner = findViewById(R.id.intolerancesSpinner)
+        val intolerances = resources.getStringArray(R.array.intolerances)
+        val intolerancesAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, intolerances)
+        intolerancesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        intolerancesSpinner.adapter = intolerancesAdapter
+
+        val dietSpinner: Spinner = findViewById(R.id.dietSpinner)
+        val diets = resources.getStringArray(R.array.diets)
+        val dietAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, diets)
+        dietAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        dietSpinner.adapter = dietAdapter
+
+        val infoIcon: ImageView = findViewById(R.id.infoIcon)
+        infoIcon.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            val inflater = layoutInflater
+            val dialogLayout = inflater.inflate(R.layout.dialog_with_image, null)
+            val textView = dialogLayout.findViewById<TextView>(R.id.text)
+            textView.text = Html.fromHtml("""
+            <h6><b>Gluten Free</b></h6> Eliminating gluten means avoiding wheat, barley, rye, and other gluten-containing grains and foods made from them (or that may have been cross contaminated).\n
+                                            <h6>Ketogenic<b>
+            """, Html.FROM_HTML_MODE_LEGACY)
+            builder.setView(dialogLayout)
+            builder.show()
+        }
 
         val searchButton = findViewById<Button>(R.id.searchRecipeButton)
         searchButton.setOnClickListener {
             val query = searchView.query.toString()
-            val cuisine = searchSpinner.selectedItem.toString()
+            val cuisine = cuisineSpinner.selectedItem.toString()
             searchRecipes(query, cuisine)
         }
 
@@ -68,7 +127,7 @@ class SearchRecipeActivity : AppCompatActivity() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
-                    val cuisine = searchSpinner.selectedItem.toString()
+                    val cuisine = cuisineSpinner.selectedItem.toString()
                     searchRecipes(it, cuisine)
                 }
                 return true
@@ -79,11 +138,26 @@ class SearchRecipeActivity : AppCompatActivity() {
             }
         })
     }
-    
-    private fun searchRecipes(query: String, cuisine: String) {
+
+    private fun searchRecipes(query: String, cuisinePl: String) {
+        val cuisineEn = cuisinesMap[cuisinePl] ?: "Any"
         val base_url = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=9091e7d35cc74b1baca0b9194fa229bc"
-        var url = if (cuisine != "Dowolna") base_url else "$base_url&cuisine=$cuisine"
+        var url = if (cuisineEn == "Any") base_url else "$base_url&cuisine=$cuisineEn"
         val onlyAvailableIngredientsCheckBox: CheckBox = findViewById(R.id.onlyAvailableIngredientsCheckBox)
+        val intolerancesSpinner: Spinner = findViewById(R.id.intolerancesSpinner)
+        val dietSpinner: Spinner = findViewById(R.id.dietSpinner)
+
+        val intolerance = intolerancesSpinner.selectedItem.toString()
+        val diet = dietSpinner.selectedItem.toString()
+
+        if (intolerance != "None") {
+            url += "&intolerances=$intolerance"
+        }
+
+        if(diet != "None") {
+            url += "&diet=$diet"
+        }
+
         if (onlyAvailableIngredientsCheckBox.isChecked) {
             val productDao = AppDatabase.getDatabase(this@SearchRecipeActivity).productDao()
             productDao.getAll().observe(this, Observer { products ->

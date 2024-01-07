@@ -2,4 +2,34 @@
     <string name="app_name">CookingPal</string>
     <string name="choose_category_prompt">Wybierz kategorię</string>
     <string name="show_favorites">Pokaż ulubione</string>
+    <string-array name="cuisines_pl">
+    <item>Dowolna</item>
+    <item>Afrykańska</item>
+    <item>Amerykańska</item>
+    <item>Azjatycka</item>
+    <item>Brytyjska</item>
+    <item>Cajun</item>
+    <item>Karaibska</item>
+    <item>Chińska</item>
+    <item>Wschodnioeuropejska</item>
+    <item>Europejska</item>
+    <item>Francuska</item>
+    <item>Niemiecka</item>
+    <item>Grecka</item>
+    <item>Hinduska</item>
+    <item>Irlandzka</item>
+    <item>Włoska</item>
+    <item>Japońska</item>
+    <item>Żydowska</item>
+    <item>Koreańska</item>
+    <item>Latynoamerykańska</item>
+    <item>Śródziemnomorska</item>
+    <item>Meksykańska</item>
+    <item>Bliskowschodnia</item>
+    <item>Nordycka</item>
+    <item>Południowa</item>
+    <item>Hiszpańska</item>
+    <item>Tajska</item>
+    <item>Wietnamska</item>
+</string-array>
 </resources>
