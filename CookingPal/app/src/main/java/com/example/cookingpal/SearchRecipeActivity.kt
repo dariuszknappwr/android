@@ -174,7 +174,7 @@ class SearchRecipeActivity : AppCompatActivity() {
     }
 
     private fun searchRecipes(query: String, cuisines: List<String>, intolerances: List<String>, diets: List<String>) {
-        var url = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=9091e7d35cc74b1baca0b9194fa229bc"
+        var url = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=3520307f240e4b4e85f839761e09ffbd"
 
         if (cuisines.isNotEmpty()) {
             val cuisinesEn = cuisines.map { cuisinesMap[it] ?: "Any" }
@@ -203,6 +203,8 @@ class SearchRecipeActivity : AppCompatActivity() {
             makeRequest(url)
     }
     
+
+    
     private fun makeRequest(url: String) {
         val request = Request.Builder().url(url).build()
     
@@ -226,21 +228,8 @@ class SearchRecipeActivity : AppCompatActivity() {
                         val id = recipeJson.getInt("id")
                         val title = recipeJson.getString("title")
                         val imageUrl = if (recipeJson.has("image")) recipeJson.getString("image") else null
-                        val instructions = if (recipeJson.has("summary")) recipeJson.getString("summary") else null
-
-                        val extendedIngredients = if (recipeJson.has("extendedIngredients")) recipeJson.getJSONArray("extendedIngredients") else null
-                        val ingredientsList = mutableListOf<Product>()
-
-                        if (extendedIngredients != null) {
-                            for (i in 0 until extendedIngredients.length()) {
-                                val ingredientJson = extendedIngredients.getJSONObject(i)
-                                val ingredientName = ingredientJson.getString("name")
-                                val product = Product(0,ingredientName)
-                                ingredientsList.add(product)
-                            }
-                        }
-
-                        val recipe = Recipe(id, title, imageUrl, ingredientsList, instructions)
+                    
+                        val recipe = Recipe(id, title, imageUrl)
                         recipeList.add(recipe)
                     }
     

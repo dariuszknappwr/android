@@ -1,14 +1,12 @@
 package com.example.cookingpal
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,19 +20,6 @@ class RecipeAdapter(private val listener: OnRecipeClickListener, private var rec
         fun onRecipeClick(recipe: Recipe)
     }
 
-    class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val titleTextView: TextView = itemView.findViewById(R.id.textViewTitle)
-        val imageView: ImageView = itemView.findViewById(R.id.imageView)
-        val favoriteImageView: ImageView = itemView.findViewById(R.id.favoriteImageView)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
-        context = parent.context
-        val view = LayoutInflater.from(context).inflate(R.layout.item_recipe, parent, false)
-        recipeDao = AppDatabase.getDatabase(context).recipeDao()
-        return RecipeViewHolder(view)
-    }
-
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val recipe = recipes[position]
         holder.titleTextView.text = recipe.title
@@ -45,9 +30,8 @@ class RecipeAdapter(private val listener: OnRecipeClickListener, private var rec
 
         holder.favoriteImageView.setOnClickListener {
             recipe.favorite = !recipe.favorite
-            val recipeEntity: RecipeEntity = RecipeEntity(recipe.id, recipe.title, recipe.ingredients.joinToString(","), recipe.instructions ?: "", recipe.imageUrl, recipe.favorite)
             notifyItemChanged(position)
-            saveFavorite(recipeEntity)
+            saveFavorite(recipe)
         }
 
         holder.itemView.setOnClickListener {
@@ -55,13 +39,30 @@ class RecipeAdapter(private val listener: OnRecipeClickListener, private var rec
         }
     }
 
+
+
+    class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val titleTextView: TextView = itemView.findViewById(R.id.textViewTitle)
+        val imageView: ImageView = itemView.findViewById(R.id.imageView)
+        val favoriteImageView: ImageView = itemView.findViewById(R.id.favoriteImageView)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
+        context = parent.context
+        val view = LayoutInflater.from(context).inflate(R.layout.item_recipe, parent, false)
+
+        recipeDao = AppDatabase.getDatabase(context).recipeDao()
+        return RecipeViewHolder(view)
+    }
+
+
+
     override fun getItemCount() = recipes.size
 
-    private fun saveFavorite(recipe: RecipeEntity) {
+    private fun saveFavorite(recipe: Recipe) {
+        val recipeEntity = RecipeEntity(recipe.id, recipe.title, "","", recipe.imageUrl, recipe.favorite)
         CoroutineScope(Dispatchers.IO).launch {
-            var detailedRecipe = RecipeDetailActivity.fetchRecipe(recipe.id)
-            Log.d("RecipeAdapter", "Saving recipe: $detailedRecipe")
-            recipeDao.insertRecipe(detailedRecipe)
+            recipeDao.insertRecipe(recipeEntity)
         }
     }
 

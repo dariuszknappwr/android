@@ -24,7 +24,7 @@ class FavoriteRecipesActivity : AppCompatActivity(), RecipeAdapter.OnRecipeClick
         recipeDao = AppDatabase.getDatabase(this).recipeDao()
 
         binding.recyclerView.layoutManager = LinearLayoutManager(this@FavoriteRecipesActivity)
-        binding.recyclerView.adapter = RecipeAdapter(this@FavoriteRecipesActivity, emptyList())
+        binding.recyclerView.adapter = RecipeAdapter(this,emptyList())
 
         loadFavoriteRecipes()
     }
