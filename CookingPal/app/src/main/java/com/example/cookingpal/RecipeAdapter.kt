@@ -60,7 +60,7 @@ class RecipeAdapter(private val listener: OnRecipeClickListener, private var rec
     override fun getItemCount() = recipes.size
 
     private fun saveFavorite(recipe: Recipe) {
-        val recipeEntity = RecipeEntity(recipe.id, recipe.title, "","", recipe.imageUrl, recipe.favorite)
+        val recipeEntity = RecipeEntity(recipe.id, recipe.title, recipe.ingredients.toString(),recipe.instructions.toString(), recipe.imageUrl, recipe.favorite)
         CoroutineScope(Dispatchers.IO).launch {
             recipeDao.insertRecipe(recipeEntity)
         }

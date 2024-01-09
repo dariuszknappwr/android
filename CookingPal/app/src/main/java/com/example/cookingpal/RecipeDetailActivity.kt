@@ -6,6 +6,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -15,12 +21,15 @@ import org.json.JSONObject
 import java.io.IOException
 
 class RecipeDetailActivity : AppCompatActivity() {
+    private lateinit var recipeDao: RecipeDao
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recipe_detail)
 
-        // Get the passed recipe id
         val recipeId = intent.getIntExtra("recipe_id", -1)
+
+        recipeDao = AppDatabase.getDatabase(this).recipeDao()
 
         if (recipeId != -1) {
             fetchRecipeDetails(recipeId)
@@ -28,6 +37,24 @@ class RecipeDetailActivity : AppCompatActivity() {
     }
 
     private fun fetchRecipeDetails(id: Int) {
+        var existingRecipe: RecipeEntity? = null
+        CoroutineScope(Dispatchers.IO).launch{
+            existingRecipe = recipeDao.getRecipeById(id)
+            if(existingRecipe != null){
+                makeNetworkRequest(id)
+            } else {
+                withContext(Dispatchers.Main){
+                    val gson = Gson()
+                    val ingredientsType = object : TypeToken<List<Product>>() {}.type
+                    val ingredients: List<Product> = gson.fromJson(existingRecipe!!.ingredients, ingredientsType)
+                    val recipe: Recipe = Recipe(existingRecipe!!.id, existingRecipe!!.title, existingRecipe!!.imageUrl, ingredients, existingRecipe!!.instructions)
+                    updateUI(recipe)
+                }
+            }
+        }
+    }
+
+    private fun makeNetworkRequest(id: Int) {
         val url = "https://api.spoonacular.com/recipes/$id/information?includeNutrition=false&apiKey=3520307f240e4b4e85f839761e09ffbd"
 
         val request = Request.Builder().url(url).build()
@@ -45,12 +72,15 @@ class RecipeDetailActivity : AppCompatActivity() {
                 val title = jsonResponse.getString("title")
                 val imageUrl = if (jsonResponse.has("image")) jsonResponse.getString("image") else null
 
-                var instructions = jsonResponse.getString("summary")
+                var instructions: String = ""
+                if(jsonResponse.has("summary")){
+                instructions = jsonResponse.getString("summary")
+                }
                 instructions = Html.fromHtml(instructions, Html.FROM_HTML_MODE_LEGACY).toString()
 
                 if (jsonResponse.has("extendedIngredients")) {
                     val ingredients = jsonResponse.getJSONArray("extendedIngredients")
-                    val ingredientsList = mutableListOf<String>()
+                    val ingredientsList = mutableListOf<Product>()
 
                     for (i in 0 until ingredients.length()) {
                         val ingredient = ingredients.getJSONObject(i)
@@ -59,28 +89,32 @@ class RecipeDetailActivity : AppCompatActivity() {
                         val metric = measures.getJSONObject("metric")
                         val amount = metric.getDouble("amount")
                         val unit = metric.getString("unitShort")
-                        ingredientsList.add("$name: $amount $unit")
+                        ingredientsList.add(Product(0, "$name: $amount $unit"))
                     }
 
                     runOnUiThread {
-                        val titleTextView = findViewById<TextView>(R.id.textViewTitle)
-                        titleTextView.text = title
-
-                        val ingredientsTextView = findViewById<TextView>(R.id.textViewIngredients)
-                        ingredientsTextView.text = ingredientsList.toString()
-
-                        val imageView = findViewById<ImageView>(R.id.imageView)
-                        if (imageUrl != null) {
-                            Glide.with(this@RecipeDetailActivity).load(imageUrl).into(imageView)
-                        } else {
-                            imageView.setImageResource(R.drawable.default_image)
-                        }
-
-                        val instructionsTextView = findViewById<TextView>(R.id.textViewInstructions)
-                        instructionsTextView.text = instructions
+                        updateUI(Recipe(id, title, imageUrl, ingredientsList, instructions))
                     }
                 }
             }
         })
+    }
+
+    private fun updateUI(recipe: Recipe) {
+        val titleTextView = findViewById<TextView>(R.id.textViewTitle)
+        titleTextView.text = recipe.title
+
+        val ingredientsTextView = findViewById<TextView>(R.id.textViewIngredients)
+        ingredientsTextView.text = recipe.ingredients.map{it.name}.toString()
+
+        val imageView = findViewById<ImageView>(R.id.imageView)
+        if (recipe.imageUrl != null) {
+            Glide.with(this@RecipeDetailActivity).load(recipe.imageUrl).into(imageView)
+        } else {
+            imageView.setImageResource(R.drawable.default_image)
+        }
+
+        val instructionsTextView = findViewById<TextView>(R.id.textViewInstructions)
+        instructionsTextView.text = recipe.instructions
     }
 }

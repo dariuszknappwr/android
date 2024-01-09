@@ -3,6 +3,7 @@ package com.example.cookingpal
 import android.content.Intent
 import android.os.Bundle
 import android.text.Html
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -14,6 +15,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -50,6 +52,8 @@ class SearchRecipeActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: RecipeAdapter
     private lateinit var cookingPalApp: CookingPalApp
+    private val recipeListLiveData = MutableLiveData<List<Recipe>>()
+    private val recipeList = mutableListOf<Recipe>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,10 +132,7 @@ class SearchRecipeActivity : AppCompatActivity() {
             val inflater = layoutInflater
             val dialogLayout = inflater.inflate(R.layout.dialog_with_image, null)
             val textView = dialogLayout.findViewById<TextView>(R.id.text)
-            textView.text = Html.fromHtml("""
-            <h6><b>Gluten Free</b></h6> Eliminating gluten means avoiding wheat, barley, rye, and other gluten-containing grains and foods made from them (or that may have been cross contaminated).\n
-                                            <h6>Ketogenic<b>
-            """, Html.FROM_HTML_MODE_LEGACY)
+            textView.text = getString(R.string.diets_description)
             builder.setView(dialogLayout)
             builder.show()
         }
@@ -171,9 +172,14 @@ class SearchRecipeActivity : AppCompatActivity() {
                 return true
             }
         })
+
+        recipeListLiveData.observe(this, Observer { recipes ->
+            adapter.updateRecipes(recipes)
+        })
     }
 
     private fun searchRecipes(query: String, cuisines: List<String>, intolerances: List<String>, diets: List<String>) {
+
         var url = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=3520307f240e4b4e85f839761e09ffbd"
 
         if (cuisines.isNotEmpty()) {
@@ -203,8 +209,6 @@ class SearchRecipeActivity : AppCompatActivity() {
             makeRequest(url)
     }
     
-
-    
     private fun makeRequest(url: String) {
         val request = Request.Builder().url(url).build()
     
@@ -213,32 +217,39 @@ class SearchRecipeActivity : AppCompatActivity() {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
             }
-    
+
             override fun onResponse(call: Call, response: Response) {
                 val strResponse = response.body()?.string()
                 val jsonResponse = JSONObject(strResponse)
-    
+                Log.d("SearchRecipeActivity", "jsonResponse = $jsonResponse")  
+
                 if (jsonResponse.has("results")) {
                     val recipes = jsonResponse.getJSONArray("results")
                     val recipeList = mutableListOf<Recipe>()
-    
+
+                    recipeList.clear()
                     for (i in 0 until recipes.length()) {
                         val recipeJson = recipes.getJSONObject(i)
-    
+
                         val id = recipeJson.getInt("id")
                         val title = recipeJson.getString("title")
                         val imageUrl = if (recipeJson.has("image")) recipeJson.getString("image") else null
-                    
-                        val recipe = Recipe(id, title, imageUrl)
+
+                        val recipe = Recipe(
+                            id,
+                            title,
+                            imageUrl)
                         recipeList.add(recipe)
-                    }
-    
-                    runOnUiThread {
-                        adapter.updateRecipes(recipeList)
+                        }
+
+                        runOnUiThread {
+                            recipeListLiveData.postValue(recipeList)
+                            Log.d("SearchRecipeActivity", "recipeListLiveData = $recipeListLiveData")
+                            adapter.updateRecipes(recipeList)
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
     }
-}
         
