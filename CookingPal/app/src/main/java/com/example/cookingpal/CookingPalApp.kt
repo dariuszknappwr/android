@@ -77,7 +77,9 @@ fun handleScanResult(result: IntentResult?) {
                     intent.putExtra("ingredientsText", ingredientsText)
                     activity.startActivity(intent)
                 } else {
-                    Toast.makeText(activity, "Nie znaleziono produktu", Toast.LENGTH_SHORT).show()
+                    activity.runOnUiThread {
+                        Toast.makeText(activity, "Nie znaleziono produktu", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         })

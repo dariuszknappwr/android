@@ -26,7 +26,7 @@ import org.json.JSONObject
 import java.io.IOException
 
 class SearchRecipeActivity : AppCompatActivity() {
-    val cuisinesMap = mapOf(
+    val cuisinesMap: Map<String, String> = mapOf(
         "Afrykańska" to "African",
         "Amerykańska" to "American",
         "Azjatycka" to "Asian",
@@ -48,42 +48,79 @@ class SearchRecipeActivity : AppCompatActivity() {
 
     private lateinit var searchView: SearchView
     private lateinit var recyclerView: RecyclerView
-    private lateinit var searchSpinner: Spinner
     private lateinit var adapter: RecipeAdapter
     private lateinit var cookingPalApp: CookingPalApp
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_recipe)
 
-        val cuisineSpinner: Spinner = findViewById(R.id.cuisineSpinner)
         val cuisinesPl = resources.getStringArray(R.array.cuisines_pl)
-        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, cuisinesPl)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        cuisineSpinner.adapter = spinnerAdapter
-
-        cuisineSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Do nothing
-            }
-
-            override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                val cuisinePl = parent.getItemAtPosition(position).toString()
-                val cuisineEn = cuisinesMap[cuisinePl]
-            }
+        val checkedCuisines = BooleanArray(cuisinesPl.size)
+        val selectedCuisines = mutableListOf<String>()
+        val cuisineButton: Button = findViewById(R.id.cuisineButton)
+        cuisineButton.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Wybierz kuchnię")
+                .setMultiChoiceItems(cuisinesPl, checkedCuisines) { _, which, isChecked ->
+                    checkedCuisines[which] = isChecked
+                }
+                .setPositiveButton("OK") { _, _ ->
+                    selectedCuisines.clear()
+                    for (i in checkedCuisines.indices) {
+                        if (checkedCuisines[i]) {
+                            selectedCuisines.add(cuisinesPl[i])
+                        }
+                    }
+                }
+                .setNegativeButton("Anuluj", null)
+                .show()
         }
 
-        val intolerancesSpinner: Spinner = findViewById(R.id.intolerancesSpinner)
         val intolerances = resources.getStringArray(R.array.intolerances)
-        val intolerancesAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, intolerances)
-        intolerancesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        intolerancesSpinner.adapter = intolerancesAdapter
+        val checkedIntolerances = BooleanArray(intolerances.size)
+        val selectedIntolerances = mutableListOf<String>()
+        val intolerancesButton: Button = findViewById(R.id.intolerancesButton)
+        intolerancesButton.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Wybierz składniki, których nie chcesz używać")
+                .setMultiChoiceItems(intolerances, checkedIntolerances) { _, which, isChecked ->
+                    checkedIntolerances[which] = isChecked
+                }
+                .setPositiveButton("OK") { _, _ ->
+                    selectedIntolerances.clear()
+                    for (i in checkedIntolerances.indices) {
+                        if (checkedIntolerances[i]) {
+                            selectedIntolerances.add(intolerances[i])
+                        }
+                    }
+                }
+                .setNegativeButton("Anuluj", null)
+                .show()
+        }
 
-        val dietSpinner: Spinner = findViewById(R.id.dietSpinner)
         val diets = resources.getStringArray(R.array.diets)
-        val dietAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, diets)
-        dietAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        dietSpinner.adapter = dietAdapter
+        val checkedDiets = BooleanArray(diets.size)
+        val selectedDiets = mutableListOf<String>()
+        val dietButton: Button = findViewById(R.id.dietButton)
+        dietButton.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Wybierz dietę")
+                .setMultiChoiceItems(diets, checkedDiets) { _, which, isChecked ->
+                    checkedDiets[which] = isChecked
+                }
+                .setPositiveButton("OK") { _, _ ->
+                    selectedDiets.clear()
+                    for (i in checkedDiets.indices) {
+                        if (checkedDiets[i]) {
+                            selectedDiets.add(diets[i])
+                        }
+                    }
+                }
+                .setNegativeButton("Anuluj", null)
+                .show()
+        }
 
         val infoIcon: ImageView = findViewById(R.id.infoIcon)
         infoIcon.setOnClickListener {
@@ -102,8 +139,7 @@ class SearchRecipeActivity : AppCompatActivity() {
         val searchButton = findViewById<Button>(R.id.searchRecipeButton)
         searchButton.setOnClickListener {
             val query = searchView.query.toString()
-            val cuisine = cuisineSpinner.selectedItem.toString()
-            searchRecipes(query, cuisine)
+            searchRecipes(query, selectedCuisines, selectedIntolerances, selectedDiets)
         }
 
         cookingPalApp = CookingPalApp(this, this)
@@ -111,12 +147,7 @@ class SearchRecipeActivity : AppCompatActivity() {
         searchView = findViewById(R.id.searchView)
         recyclerView = findViewById(R.id.recyclerView)
 
-        adapter = RecipeAdapter(listOf())
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        recyclerView.adapter = adapter
-
-        // Set the listener for the adapter
-        adapter.listener = object : RecipeAdapter.OnRecipeClickListener {
+        val onRecipeClickListener = object : RecipeAdapter.OnRecipeClickListener {
             override fun onRecipeClick(recipe: Recipe) {
                 val intent = Intent(this@SearchRecipeActivity, RecipeDetailActivity::class.java)
                 intent.putExtra("recipe_id", recipe.id)
@@ -124,11 +155,14 @@ class SearchRecipeActivity : AppCompatActivity() {
             }
         }
 
+        adapter = RecipeAdapter(onRecipeClickListener, listOf())
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = adapter
+
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
-                    val cuisine = cuisineSpinner.selectedItem.toString()
-                    searchRecipes(it, cuisine)
+                    searchRecipes(it, selectedCuisines, selectedIntolerances, selectedDiets)
                 }
                 return true
             }
@@ -139,35 +173,34 @@ class SearchRecipeActivity : AppCompatActivity() {
         })
     }
 
-    private fun searchRecipes(query: String, cuisinePl: String) {
-        val cuisineEn = cuisinesMap[cuisinePl] ?: "Any"
-        val base_url = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=9091e7d35cc74b1baca0b9194fa229bc"
-        var url = if (cuisineEn == "Any") base_url else "$base_url&cuisine=$cuisineEn"
+    private fun searchRecipes(query: String, cuisines: List<String>, intolerances: List<String>, diets: List<String>) {
+        var url = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=9091e7d35cc74b1baca0b9194fa229bc"
+
+        if (cuisines.isNotEmpty()) {
+            val cuisinesEn = cuisines.map { cuisinesMap[it] ?: "Any" }
+            if(!cuisinesEn.contains("Any")) {
+                url += "&cuisine=${cuisinesEn.joinToString(",")}"
+            }
+        }
+
+        if (intolerances.isNotEmpty()) {
+            url += "&intolerances=${intolerances.joinToString(",")}"
+        }
+
+        if (diets.isNotEmpty()) {
+            url += "&diet=${diets.joinToString(",")}"
+        }
+
         val onlyAvailableIngredientsCheckBox: CheckBox = findViewById(R.id.onlyAvailableIngredientsCheckBox)
-        val intolerancesSpinner: Spinner = findViewById(R.id.intolerancesSpinner)
-        val dietSpinner: Spinner = findViewById(R.id.dietSpinner)
-
-        val intolerance = intolerancesSpinner.selectedItem.toString()
-        val diet = dietSpinner.selectedItem.toString()
-
-        if (intolerance != "None") {
-            url += "&intolerances=$intolerance"
-        }
-
-        if(diet != "None") {
-            url += "&diet=$diet"
-        }
-
         if (onlyAvailableIngredientsCheckBox.isChecked) {
             val productDao = AppDatabase.getDatabase(this@SearchRecipeActivity).productDao()
             productDao.getAll().observe(this, Observer { products ->
                 val ingredients = products.joinToString("+") { it.name }
                 url += "&includeIngredients=$ingredients"
-                makeRequest(url)
             })
-        } else {
-            makeRequest(url)
         }
+
+            makeRequest(url)
     }
     
     private fun makeRequest(url: String) {
@@ -193,8 +226,21 @@ class SearchRecipeActivity : AppCompatActivity() {
                         val id = recipeJson.getInt("id")
                         val title = recipeJson.getString("title")
                         val imageUrl = if (recipeJson.has("image")) recipeJson.getString("image") else null
-                    
-                        val recipe = Recipe(id, title, imageUrl)
+                        val instructions = if (recipeJson.has("summary")) recipeJson.getString("summary") else null
+
+                        val extendedIngredients = if (recipeJson.has("extendedIngredients")) recipeJson.getJSONArray("extendedIngredients") else null
+                        val ingredientsList = mutableListOf<Product>()
+
+                        if (extendedIngredients != null) {
+                            for (i in 0 until extendedIngredients.length()) {
+                                val ingredientJson = extendedIngredients.getJSONObject(i)
+                                val ingredientName = ingredientJson.getString("name")
+                                val product = Product(0,ingredientName)
+                                ingredientsList.add(product)
+                            }
+                        }
+
+                        val recipe = Recipe(id, title, imageUrl, ingredientsList, instructions)
                         recipeList.add(recipe)
                     }
     

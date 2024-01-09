@@ -17,10 +17,6 @@ class MainActivity : AppCompatActivity() {
 
         cookingApp = CookingPalApp(this, this)
 
-        binding.scanButton.setOnClickListener {
-            cookingApp.scanBarcode()
-        }
-
         binding.addIngredientButton.setOnClickListener {
             val intent = Intent(this, AddProductActivity::class.java)
             startActivity(intent)

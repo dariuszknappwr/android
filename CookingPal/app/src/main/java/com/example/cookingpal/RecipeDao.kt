@@ -15,4 +15,7 @@ interface RecipeDao {
 
     @Query("SELECT * FROM recipes WHERE favorite = 1")
     fun getFavoriteRecipes(): List<RecipeEntity>
+
+    @Query("SELECT * FROM recipes WHERE id = :recipeId")
+    suspend fun getRecipeById(recipeId: Int): RecipeEntity?
 }

@@ -11,27 +11,16 @@
     android:paddingBottom="16dp"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/scanButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="34dp"
-        android:text="Skanuj Kod Kreskowy"
-        app:layout_constraintStart_toStartOf="@+id/addIngredientButton"
-        app:layout_constraintTop_toBottomOf="@+id/addIngredientButton" />
-
 
     <Button
         android:id="@+id/addIngredientButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="96dp"
+        android:layout_marginStart="128dp"
         android:layout_marginTop="16dp"
         android:text="Dodaj składnik"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/viewFavoritesButton" />
-
 
     <Button
         android:id="@+id/searchButton"
@@ -46,7 +35,7 @@
         android:id="@+id/viewFavoritesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="93dp"
+        android:layout_marginTop="80dp"
         android:text="@string/show_favorites"
         app:layout_constraintEnd_toEndOf="@+id/addIngredientButton"
         app:layout_constraintStart_toEndOf="@+id/addIngredientButton"

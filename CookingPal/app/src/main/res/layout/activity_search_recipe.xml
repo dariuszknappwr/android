@@ -16,79 +16,67 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/cuisineButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Kuchnia:"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Kuchnia"
+        app:backgroundTint="@color/buttonColor"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchView"
-        app:layout_constraintBottom_toBottomOf="@id/cuisineSpinner" />
-
-    <Spinner
-        android:id="@+id/cuisineSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/textView"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/searchView" />
 
-    <TextView
-        android:id="@+id/intolerancesTextView"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/intolerancesButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nietolerancje:"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Nietolerancje"
+        app:backgroundTint="@color/buttonColor"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cuisineSpinner" />
+        app:layout_constraintTop_toBottomOf="@id/cuisineButton" />
 
-    <Spinner
-        android:id="@+id/intolerancesSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/intolerancesTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cuisineSpinner" />
-
-    <TextView
-        android:id="@+id/dietTextView"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/dietButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dieta:"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Dieta"
+        app:backgroundTint="@color/buttonColor"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/intolerancesSpinner" />
-
-    <Spinner
-        android:id="@+id/dietSpinner"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/dietTextView"
-        app:layout_constraintEnd_toStartOf="@id/infoIcon"
-        app:layout_constraintTop_toBottomOf="@id/intolerancesSpinner" />
+        app:layout_constraintTop_toBottomOf="@id/intolerancesButton" />
 
     <ImageView
         android:id="@+id/infoIcon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:src="@drawable/ic_info"
-        android:tint="?attr/colorControlHighlight"
-        app:layout_constraintStart_toEndOf="@id/dietSpinner"
+        app:layout_constraintBottom_toBottomOf="@id/dietButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/dietSpinner"
-        app:layout_constraintBottom_toBottomOf="@id/dietSpinner" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/dietButton"
+        app:layout_constraintTop_toTopOf="@id/dietButton"
+        app:tint="#6A88D5" />
 
     <CheckBox
         android:id="@+id/onlyAvailableIngredientsCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:text="Tylko posiadane składniki"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dietSpinner" />
+        app:layout_constraintTop_toBottomOf="@id/dietButton" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/searchRecipeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
         android:text="Wyszukaj"
+        app:backgroundTint="@color/buttonColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/onlyAvailableIngredientsCheckBox" />
 

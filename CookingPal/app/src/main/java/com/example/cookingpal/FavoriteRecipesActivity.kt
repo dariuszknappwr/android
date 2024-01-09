@@ -1,5 +1,6 @@
 package com.example.cookingpal
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -11,38 +12,40 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.cookingpal.databinding.ActivityFavoriteRecipesBinding
 
-class FavoriteRecipesActivity : AppCompatActivity() {
+class FavoriteRecipesActivity : AppCompatActivity(), RecipeAdapter.OnRecipeClickListener {
     private lateinit var binding: ActivityFavoriteRecipesBinding
     private lateinit var recipeDao: RecipeDao
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("FavoriteRecipesActivity", "Activity starting")
         binding = ActivityFavoriteRecipesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val db = Room.databaseBuilder(
-            applicationContext,
-            RecipeDatabase::class.java, "recipe-database"
-        ).build()
-        recipeDao = db.recipeDao()
+        recipeDao = AppDatabase.getDatabase(this).recipeDao()
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(this@FavoriteRecipesActivity)
+        binding.recyclerView.adapter = RecipeAdapter(this@FavoriteRecipesActivity, emptyList())
 
         loadFavoriteRecipes()
     }
 
+    override fun onRecipeClick(recipe: Recipe) {
+        val intent = Intent(this, RecipeDetailActivity::class.java)
+        intent.putExtra("recipe_id", recipe.id)
+        startActivity(intent)
+    }
+
     private fun loadFavoriteRecipes() {
-        Log.d("FavoriteRecipesActivity", "About to launch coroutine")
+        Log.d("FavoriteRecipesActivity", "loadFavoriteRecipes")
         CoroutineScope(Dispatchers.IO).launch {
             val favoriteRecipesEntities = recipeDao.getFavoriteRecipes()
-            Log.d("FavoriteRecipesActivity", "favoriteRecipesEntities: $favoriteRecipesEntities")
-            val favoriteRecipes = favoriteRecipesEntities.map { 
-                Recipe(it.id, it.title,it.imageUrl, emptyList(), "", it.favorite)
+            val favoriteRecipes = favoriteRecipesEntities.map {
+                Recipe(it.id, it.title,it.imageUrl, listOf(Product(0,it.ingredients)), it.instructions, it.favorite)
+                
             }
-            Log.d("FavoriteRecipesActivity", "favoriteRecipes: $favoriteRecipes")
+            Log.d("FavoriteRecipesActivity", "loadFavoriteRecipes: favoriteRecipes = $favoriteRecipes")
             withContext(Dispatchers.Main) {
-                val adapter = RecipeAdapter(favoriteRecipes)
-                binding.recyclerView.layoutManager = LinearLayoutManager(this@FavoriteRecipesActivity)
-                binding.recyclerView.adapter = adapter
+                binding.recyclerView.adapter = RecipeAdapter(this@FavoriteRecipesActivity, favoriteRecipes)
             }
         }
     }
