@@ -40,7 +40,5 @@ class MainActivity : AppCompatActivity() {
             cookingApp.handleScanResult(result)
         }
     }
-
-    private var displayedRecipe: Recipe? = null
 }
 

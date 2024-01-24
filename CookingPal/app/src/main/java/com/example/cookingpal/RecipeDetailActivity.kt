@@ -73,8 +73,8 @@ class RecipeDetailActivity : AppCompatActivity() {
                 val imageUrl = if (jsonResponse.has("image")) jsonResponse.getString("image") else null
 
                 var instructions: String = ""
-                if(jsonResponse.has("summary")){
-                instructions = jsonResponse.getString("summary")
+                if(jsonResponse.has("instructions")){
+                instructions = jsonResponse.getString("instructions")
                 }
                 instructions = Html.fromHtml(instructions, Html.FROM_HTML_MODE_LEGACY).toString()
 

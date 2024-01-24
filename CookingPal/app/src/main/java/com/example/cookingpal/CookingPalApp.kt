@@ -22,17 +22,12 @@ import org.json.JSONObject
 import java.io.IOException
 
 class CookingPalApp(private val activity: Activity, context: Context) {
-    private val products: MutableList<Product> = mutableListOf()
-    private val recipes: MutableList<Recipe> = mutableListOf()
-    private val favorites: MutableList<Recipe> = mutableListOf()
 
     private val database: AppDatabase = Room.databaseBuilder(
         context,
         AppDatabase::class.java,
         "cooking_pal_database"
     ).build()
-
-    private val recipeDao: RecipeDao = database.recipeDao()
 
     fun scanBarcode() {
         val integrator = IntentIntegrator(activity)
@@ -42,49 +37,45 @@ class CookingPalApp(private val activity: Activity, context: Context) {
         integrator.initiateScan()
     }
 
-fun handleScanResult(result: IntentResult?) {
-    if (result != null) {
-        val scannedContent = result.contents
-        println("Zeskanowano kod kreskowy: $scannedContent")
+    fun handleScanResult(result: IntentResult?) {
+        if (result != null) {
+            val scannedContent = result.contents
+            println("Zeskanowano kod kreskowy: $scannedContent")
 
-        // Send a request to the Open Food Facts API
-        val url = "https://world.openfoodfacts.org/api/v0/product/$scannedContent.json"
-        val request = Request.Builder().url(url).build()
+            val url = "https://world.openfoodfacts.org/api/v0/product/$scannedContent.json"
+            val request = Request.Builder().url(url).build()
 
-        val client = OkHttpClient()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-            }
+            val client = OkHttpClient()
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    e.printStackTrace()
+                }
 
-            override fun onResponse(call: Call, response: Response) {
-                val strResponse = response.body()?.string()
-                val jsonResponse = JSONObject(strResponse)
-            
-                // Check if the product exists
-                if (jsonResponse.getString("status_verbose") == "product found") {
-                    val product = jsonResponse.getJSONObject("product")
-            
-                    // Get the product name
-                    val productName = product.getString("product_name")
-            
-                    // Get the ingredients
-                    val ingredientsText = product.getString("ingredients_text")
-            
-                    // Start a new Activity
-                    val intent = Intent(activity, ScanResultActivity::class.java)
-                    intent.putExtra("productName", productName)
-                    intent.putExtra("ingredientsText", ingredientsText)
-                    activity.startActivity(intent)
-                } else {
-                    activity.runOnUiThread {
-                        Toast.makeText(activity, "Nie znaleziono produktu", Toast.LENGTH_SHORT).show()
+                override fun onResponse(call: Call, response: Response) {
+                    val strResponse = response.body()?.string()
+                    val jsonResponse = JSONObject(strResponse)
+
+                    if (jsonResponse.getString("status_verbose") == "product found") {
+                        val product = jsonResponse.getJSONObject("product")
+
+                        val productName = product.getString("product_name")
+
+                        val ingredientsText = product.getString("ingredients_text")
+
+                        val intent = Intent(activity, ScanResultActivity::class.java)
+                        intent.putExtra("productName", productName)
+                        intent.putExtra("ingredientsText", ingredientsText)
+                        activity.startActivity(intent)
+                    } else {
+                        activity.runOnUiThread {
+                            Toast.makeText(activity, "Nie znaleziono produktu", Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
     }
-}
 
 }
 
