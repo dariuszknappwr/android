@@ -12,6 +12,9 @@ interface ProductDao {
     @Query("SELECT * FROM products")
     fun getAll(): LiveData<List<Product>>
 
+    @Query("SELECT * FROM products")
+    suspend fun getAllDirect(): List<Product>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(product: Product)
     

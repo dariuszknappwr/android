@@ -15,10 +15,15 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -46,7 +51,7 @@ class SearchRecipeActivity : AppCompatActivity() {
         "Hiszpańska" to "Spanish",
         "Tajajska" to "Thai",
         "Wietnamska" to "Vietnamese"
-        )
+    )
 
     private lateinit var searchView: SearchView
     private lateinit var recyclerView: RecyclerView
@@ -178,13 +183,23 @@ class SearchRecipeActivity : AppCompatActivity() {
         })
     }
 
-    private fun searchRecipes(query: String, cuisines: List<String>, intolerances: List<String>, diets: List<String>) {
+    private fun searchRecipes(
+        query: String,
+        cuisines: List<String>,
+        intolerances: List<String>,
+        diets: List<String>
+    ) {
 
-        var url = "https://api.spoonacular.com/recipes/complexSearch?query=$query&apiKey=3520307f240e4b4e85f839761e09ffbd"
+        var url =
+            "https://api.spoonacular.com/recipes/complexSearch?apiKey=3520307f240e4b4e85f839761e09ffbd"
+
+        if (!query.isEmpty()) {
+            url += "&query=$query"
+        }
 
         if (cuisines.isNotEmpty()) {
             val cuisinesEn = cuisines.map { cuisinesMap[it] ?: "Any" }
-            if(!cuisinesEn.contains("Any")) {
+            if (!cuisinesEn.contains("Any")) {
                 url += "&cuisine=${cuisinesEn.joinToString(",")}"
             }
         }
@@ -197,21 +212,32 @@ class SearchRecipeActivity : AppCompatActivity() {
             url += "&diet=${diets.joinToString(",")}"
         }
 
-        val onlyAvailableIngredientsCheckBox: CheckBox = findViewById(R.id.onlyAvailableIngredientsCheckBox)
+        val onlyAvailableIngredientsCheckBox: CheckBox =
+            findViewById(R.id.onlyAvailableIngredientsCheckBox)
         if (onlyAvailableIngredientsCheckBox.isChecked) {
-            val productDao = AppDatabase.getDatabase(this@SearchRecipeActivity).productDao()
-            productDao.getAll().observe(this, Observer { products ->
-                val ingredients = products.joinToString("+") { it.name }
-                url += "&includeIngredients=$ingredients"
-            })
+            CoroutineScope(Dispatchers.IO).launch {
+                val productDao = AppDatabase.getDatabase(this@SearchRecipeActivity).productDao()
+                val products: List<Product> = productDao.getAllDirect()
+                val ingredients: List<Product> = products.map { Product(it.id, it.name) }
+                url += "&includeIngredients=" + ingredients.joinToString("+") { it.name }
+
+                withContext(Dispatchers.Main) {
+                    println("url = $url")
+                    makeRequest(url)
+                }
+            }
+        } else {
+            makeRequest(url)
         }
 
-            makeRequest(url)
+        println("url = $url")
+        println(onlyAvailableIngredientsCheckBox.isChecked)
+
     }
-    
+
     private fun makeRequest(url: String) {
         val request = Request.Builder().url(url).build()
-    
+
         val client = OkHttpClient()
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -221,7 +247,7 @@ class SearchRecipeActivity : AppCompatActivity() {
             override fun onResponse(call: Call, response: Response) {
                 val strResponse = response.body()?.string()
                 val jsonResponse = JSONObject(strResponse)
-                Log.d("SearchRecipeActivity", "jsonResponse = $jsonResponse")  
+                Log.d("SearchRecipeActivity", "jsonResponse = $jsonResponse")
 
                 if (jsonResponse.has("results")) {
                     val recipes = jsonResponse.getJSONArray("results")
@@ -233,23 +259,25 @@ class SearchRecipeActivity : AppCompatActivity() {
 
                         val id = recipeJson.getInt("id")
                         val title = recipeJson.getString("title")
-                        val imageUrl = if (recipeJson.has("image")) recipeJson.getString("image") else null
+                        val imageUrl =
+                            if (recipeJson.has("image")) recipeJson.getString("image") else null
 
                         val recipe = Recipe(
                             id,
                             title,
-                            imageUrl)
+                            imageUrl
+                        )
                         recipeList.add(recipe)
-                        }
+                    }
 
-                        runOnUiThread {
-                            recipeListLiveData.postValue(recipeList)
-                            Log.d("SearchRecipeActivity", "recipeListLiveData = $recipeListLiveData")
-                            adapter.updateRecipes(recipeList)
-                        }
+                    runOnUiThread {
+                        recipeListLiveData.postValue(recipeList)
+                        Log.d("SearchRecipeActivity", "recipeListLiveData = $recipeListLiveData")
+                        adapter.updateRecipes(recipeList)
                     }
                 }
-            })
-        }
+            }
+        })
     }
+}
         
