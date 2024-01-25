@@ -11,20 +11,9 @@
     android:paddingBottom="16dp"
     tools:context=".MainActivity">
 
-
-    <Button
-        android:id="@+id/addIngredientButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="128dp"
-        android:layout_marginTop="16dp"
-        android:text="Dodaj składnik"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/viewFavoritesButton" />
-
     <Button
         android:id="@+id/searchButton"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Wyszukaj przepisy"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,12 +21,20 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/viewFavoritesButton"
-        android:layout_width="wrap_content"
+        android:id="@+id/addIngredientButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:text="Dodaj składnik"
+        app:layout_constraintEnd_toStartOf="@+id/viewFavoritesButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchButton" />
+
+    <Button
+        android:id="@+id/viewFavoritesButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:text="@string/show_favorites"
-        app:layout_constraintEnd_toEndOf="@+id/addIngredientButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/addIngredientButton"
         app:layout_constraintTop_toBottomOf="@+id/searchButton" />
 

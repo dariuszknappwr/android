@@ -54,8 +54,6 @@ class RecipeDetailActivity : AppCompatActivity() {
 
     private fun getIngredients(existingRecipe: RecipeEntity?): List<Product> {
         val rawIngredientsList = existingRecipe!!.ingredients.split(", ").toMutableList()
-        rawIngredientsList[0] = rawIngredientsList[0].substring(1)
-        rawIngredientsList[rawIngredientsList.size - 1] = rawIngredientsList.last().dropLast(1)
 
         var ingredientsList = rawIngredientsList.map {
             val cleanedName = it.replace("Product(id=0, name=", "").removeSuffix(")")
@@ -120,7 +118,10 @@ class RecipeDetailActivity : AppCompatActivity() {
         titleTextView.text = recipe.title
 
         val ingredientsTextView = findViewById<TextView>(R.id.textViewIngredients)
-        ingredientsTextView.text = recipe.ingredients.map{it.name}.toString()
+        var ingredients = recipe.ingredients.map{it.name}.toString()
+        ingredients = ingredients.replace("[", "").replace("]", "")
+        ingredients = ingredients.replace(", ", "\n")
+        ingredientsTextView.text = ingredients
 
         val imageView = findViewById<ImageView>(R.id.imageView)
         if (recipe.imageUrl != null) {

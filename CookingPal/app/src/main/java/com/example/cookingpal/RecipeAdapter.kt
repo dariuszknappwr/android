@@ -38,12 +38,13 @@ class RecipeAdapter(private val listener: OnRecipeClickListener, private var rec
         )
 
         holder.favoriteImageView.setOnClickListener {
-            recipe.favorite = !recipe.favorite //update view, don't remove
+            val updatedFavorite = !recipe.favorite
+            recipe.favorite = updatedFavorite //update view, don't remove
             notifyItemChanged(position)
             CoroutineScope(Dispatchers.IO).launch {
                 makeRequest(recipe.id) { updatedRecipe ->
                     recipe = updatedRecipe
-                    recipe.favorite = true //update record that goes into database
+                    recipe.favorite = updatedFavorite //update record that goes into database, don't remove
                     println(recipe)
 
                     saveFavorite(recipe)
@@ -77,7 +78,9 @@ class RecipeAdapter(private val listener: OnRecipeClickListener, private var rec
     override fun getItemCount() = recipes.size
 
     private fun saveFavorite(recipe: Recipe) {
-        val recipeEntity = RecipeEntity(recipe.id, recipe.title, recipe.ingredients.toString(),recipe.instructions.toString(), recipe.imageUrl, recipe.favorite)
+        val ingredientsNames = recipe.ingredients.map { it.name }
+        val ingredientsString = ingredientsNames.joinToString(", ")
+        val recipeEntity = RecipeEntity(recipe.id, recipe.title, ingredientsString,recipe.instructions.toString(), recipe.imageUrl, recipe.favorite)
         CoroutineScope(Dispatchers.IO).launch {
             recipeDao.insertRecipe(recipeEntity)
         }
