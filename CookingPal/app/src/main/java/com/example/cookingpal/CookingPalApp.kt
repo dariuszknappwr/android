@@ -58,13 +58,14 @@ class CookingPalApp(private val activity: Activity, context: Context) {
                     if (jsonResponse.getString("status_verbose") == "product found") {
                         val product = jsonResponse.getJSONObject("product")
 
-                        val productName = product.getString("product_name")
+                        val productName = product.optString("product_name")
 
-                        val ingredientsText = product.getString("ingredients_text")
+                        val ingredientsText = product.optString("ingredients_text")
 
                         val intent = Intent(activity, ScanResultActivity::class.java)
                         intent.putExtra("productName", productName)
                         intent.putExtra("ingredientsText", ingredientsText)
+                        intent.putExtra("scannedContent", scannedContent)
                         activity.startActivity(intent)
                     } else {
                         activity.runOnUiThread {

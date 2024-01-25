@@ -21,7 +21,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="149dp"
-        android:text="Add Scanned Product" />
+        android:text="Dodaj produkt" />
 
     <Spinner
         android:id="@+id/spinnerScannedProduct"
@@ -30,5 +30,14 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="296dp" />
+
+    <Button
+        android:id="@+id/button_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="69dp"
+        android:text="Wróć" />
 
 </RelativeLayout>
