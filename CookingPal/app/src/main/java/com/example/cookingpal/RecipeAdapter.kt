@@ -1,6 +1,8 @@
 package com.example.cookingpal
 
 import android.content.Context
+import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +13,13 @@ import com.bumptech.glide.Glide
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.json.JSONObject
+import java.io.IOException
 
 class RecipeAdapter(private val listener: OnRecipeClickListener, private var recipes: List<Recipe>) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
     private lateinit var recipeDao: RecipeDao
@@ -21,7 +30,7 @@ class RecipeAdapter(private val listener: OnRecipeClickListener, private var rec
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
-        val recipe = recipes[position]
+        var recipe = recipes[position]
         holder.titleTextView.text = recipe.title
         Glide.with(context).load(recipe.imageUrl).into(holder.imageView)
         holder.favoriteImageView.setImageResource(
@@ -29,9 +38,17 @@ class RecipeAdapter(private val listener: OnRecipeClickListener, private var rec
         )
 
         holder.favoriteImageView.setOnClickListener {
-            recipe.favorite = !recipe.favorite
+            recipe.favorite = !recipe.favorite //update view, don't remove
             notifyItemChanged(position)
-            saveFavorite(recipe)
+            CoroutineScope(Dispatchers.IO).launch {
+                makeRequest(recipe.id) { updatedRecipe ->
+                    recipe = updatedRecipe
+                    recipe.favorite = true //update record that goes into database
+                    println(recipe)
+
+                    saveFavorite(recipe)
+                }
+            }
         }
 
         holder.itemView.setOnClickListener {
@@ -69,5 +86,55 @@ class RecipeAdapter(private val listener: OnRecipeClickListener, private var rec
     fun updateRecipes(newRecipes: List<Recipe>) {
         recipes = newRecipes
         notifyDataSetChanged()
+    }
+
+    fun makeRequest(id: Int, callback: (Recipe) -> Unit) {
+        var url = "https://api.spoonacular.com/recipes/${id}/information?apiKey=3520307f240e4b4e85f839761e09ffbd"
+        val request = Request.Builder().url(url).build()
+
+        val client = OkHttpClient()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                val strResponse = response.body()?.string()
+                println(id)
+                println(url)
+                println("Response: $strResponse")
+                if (strResponse?.startsWith("{") == true) {
+                    val jsonResponse = JSONObject(strResponse)
+
+                    val title = jsonResponse.getString("title")
+                    val imageUrl = if (jsonResponse.has("image")) jsonResponse.getString("image") else null
+
+                    var instructions: String = ""
+                    if(jsonResponse.has("instructions")){
+                        instructions = jsonResponse.getString("instructions")
+                    }
+                    instructions = Html.fromHtml(instructions, Html.FROM_HTML_MODE_LEGACY).toString()
+
+                    if (jsonResponse.has("extendedIngredients")) {
+                        val ingredients = jsonResponse.getJSONArray("extendedIngredients")
+                        val ingredientsList = mutableListOf<Product>()
+
+                        for (i in 0 until ingredients.length()) {
+                            val ingredient = ingredients.getJSONObject(i)
+                            val name = ingredient.getString("name")
+                            val measures = ingredient.getJSONObject("measures")
+                            val metric = measures.getJSONObject("metric")
+                            val amount = metric.getDouble("amount")
+                            val unit = metric.getString("unitShort")
+                            ingredientsList.add(Product(0, "$name: $amount $unit"))
+                        }
+                        callback(Recipe(id, title, imageUrl, ingredientsList, instructions))
+                    }
+                        // rest of your code...
+                } else {
+                    println("Unexpected response type: $strResponse")
+                }
+            }
+        })
     }
 }

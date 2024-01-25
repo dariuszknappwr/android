@@ -40,18 +40,33 @@ class RecipeDetailActivity : AppCompatActivity() {
         var existingRecipe: RecipeEntity? = null
         CoroutineScope(Dispatchers.IO).launch{
             existingRecipe = recipeDao.getRecipeById(id)
-            if(existingRecipe != null){
+            if(existingRecipe == null) {
                 makeNetworkRequest(id)
             } else {
                 withContext(Dispatchers.Main){
-                    val gson = Gson()
-                    val ingredientsType = object : TypeToken<List<Product>>() {}.type
-                    val ingredients: List<Product> = gson.fromJson(existingRecipe!!.ingredients, ingredientsType)
-                    val recipe: Recipe = Recipe(existingRecipe!!.id, existingRecipe!!.title, existingRecipe!!.imageUrl, ingredients, existingRecipe!!.instructions)
+                    val ingredientsList = getIngredients(existingRecipe)
+                    val recipe: Recipe = Recipe(existingRecipe!!.id, existingRecipe!!.title, existingRecipe!!.imageUrl, ingredientsList, existingRecipe!!.instructions)
                     updateUI(recipe)
                 }
             }
         }
+    }
+
+    private fun getIngredients(existingRecipe: RecipeEntity?): List<Product> {
+        val rawIngredientsList = existingRecipe!!.ingredients.split(", ").toMutableList()
+        rawIngredientsList[0] = rawIngredientsList[0].substring(1)
+        rawIngredientsList[rawIngredientsList.size - 1] = rawIngredientsList.last().dropLast(1)
+
+        var ingredientsList = rawIngredientsList.map {
+            val cleanedName = it.replace("Product(id=0, name=", "").removeSuffix(")")
+            Product(0, it)
+
+        }
+        ingredientsList = ingredientsList.map{
+            val cleanedName = it.name.replace("Product(id=0, name=", "").removeSuffix(")")
+            Product(0, cleanedName)
+        }
+        return ingredientsList
     }
 
     private fun makeNetworkRequest(id: Int) {
